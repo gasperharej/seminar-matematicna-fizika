@@ -1,0 +1,101 @@
+\documentclass[12pt]{article}
+\newcommand{\bi}[1]{\hbox{\boldmath{$#1$}}}
+\newcommand{\bm}[1]{\hbox{\underline{$#1$}}}
+\textheight 23 cm
+\textwidth 16 cm
+\voffset=-20 mm
+\hoffset=-15 mm
+\usepackage{times}
+\usepackage{amsmath}
+\pagestyle{empty}
+\include{template}
+
+\begin{document}
+\thispagestyle{empty}
+
+
+\setcounter{equation}{0}
+\centerline{\sc matematično-fizikalni seminar~\thisyear}
+\bigskip
+\setcounter{equation}{0}
+\centerline{\bf 5. naloga: Lastne vrednosti simetričnega tenzorja}
+\bigskip
+\bigskip
+
+Simetrični tenzor $\underline{A}$ ranga $j$ ima lastne vrednosti $\lambda_i$
+in njim ustrezne lastne vektorje $\bi{x}_i$, določene z
+\[
+\underline{A}\,\bi{x}_i = \lambda_i\,\bi{x}_i , \qquad i=1, \ldots, j.
+\]
+Lastne vrednosti lahko poiščemo iz sekularne enačbe, ki ustreza
+matriki
+\[
+\underline{A} - \lambda\cdot\underline{I},
+\]
+torej iz enačbe podane z determinanto:
+\[
+{\rm Det}\,(\underline{A}-\lambda\cdot\underline{I}) = 0.
+\]
+Izberemo metodo za hitro računanje determinant in določimo ničle
+te enačbe z bisekcijo ali kako podobno metodo.
+
+Za velike matrike je taka prevedba na algebrajsko enačbo
+nepraktična in tudi sicer neuporabna, ker so koreni enačbe
+preobčutljivi na napake koeficientov. V takem primeru
+računamo raje neposredno in poskušamo matriko $\underline{A}$ diagonalizirati.
+Za simetrične matrike obstaja veliko naprednih metod (Jacobijeva, Householderjeva...),
+ki jih je enostavno sprogramirati. Metode bazirajo na matematičnemu teoremu, da
+se da vsaka simetrična matrika diagonalizirati s pomočjo ortogonalne matrike Q:
+\[
+A(\mathrm{diag}) = Q^T \cdot A \cdot Q,
+\]
+kjer potem stolpci matrike Q predstavljajo tudi ustrezne lastne vektorje. Različne
+numerične metode nam ponudijo izračun matrike Q.
+
+
+Obstajajo tudi zelo preprosti načini za ekstrakcijo posameznih lastnih vrednosti:
+Največjo lastno vrednost dobimo lahko tudi s potenčno metodo:
+s poljubnim začetnim približkom $\bi{x}^{(0)}$
+za lastni vektor vstopimo v iteracijo
+\[
+\bi{y}^{(i+1)} = \underline{A}\,\bi{x}^{(i)},
+\quad \bi{x}^{(i+1)} = \frac{1}{a}\,\bi{y}^{(i+1)},
+\]
+kjer je $a$ normalizacijska konstanta, s katero renormaliziramo
+vektorje $\bi{x}^{(i)}$ na stalno velikost. Ko se začne v postopku vektor
+\bi{x} `ponavljati' (se malo spreminja), je $a$ dober približek za lastno vrednost, \bi{x}
+pa za ustrezni lastni vektor.  Podobno lahko poiščemo tudi najmanjšo
+lastno vrednost, ki je enaka največji lastni vrednosti
+$\underline{A}^{-1}$. Že znane lastne vrednosti odstranimo iz matrike $\underline{A}$ z \emph{Hotellingovo redukcijo}. (Ko v matriki ranga 4 določimo največjo in najmanjšo lastno vrednost, nam za drugi dve preostane le še
+kvadratna enačba, torej redukcija ni več potrebna...)
+
+\medskip
+
+{\it Naloga\/}: Določi lastne vektorje in lastne vrednosti simetričnih matrik in primerjaj rezultate z vgrajenimi funkcijami. Uporabi iterativno QR metodo in razišči, koliko iteracij je potrebno za določeno natančnost. Kako se spremeni hitrost konvergence, če matriko prej preoblikujemo na tridiagonalno matriko?
+\begin{itemize}
+	\item \[ \begin{bmatrix}
+1000. & 0.1 & 0.01 & 0.001 & 0.0001 & 0.00001 & 0.000001 \\
+0.1 & 1000. & 0.1 & 0.01 & 0.001 & 0.0001 & 0.00001 \\
+0.01 & 0.1 & 1000. & 0.1 & 0.01 & 0.001 & 0.0001\\
+0.001 & 0.01 & 0.1 & 1000. & 0.1 & 0.01 & 0.001\\
+0.0001 & 0.001 & 0.01 & 0.1 & 1000 & 0.1 & 0.01\\
+0.00001 & 0.0001 & 0.001 & 0.01 & 0.1 & 1000.  & 0.1 \\
+0.000001 & 0.00001 & 0.0001 & 0.001 & 0.01 & 0.1 & 1000.
+	\end{bmatrix} \]
+\item \[ \begin{bmatrix}
+10^6 & 0.1 & 0.01 & 0.001 & 0.0001 & 0.00001 & 0.000001 \\
+0.1 & 10^6 & 0.1 & 0.01 & 0.001 & 0.0001 & 0.00001 \\
+0.01 & 0.1 & 10^6 & 0.1 & 0.01 & 0.001 & 0.0001\\
+0.001 & 0.01 & 0.1 & 10^6 & 0.1 & 0.01 & 0.001\\
+0.0001 & 0.001 & 0.01 & 0.1 & 10^6 & 0.1 & 0.01\\
+0.00001 & 0.0001 & 0.001 & 0.01 & 0.1 & 10^6  & 0.1 \\
+0.000001 & 0.00001 & 0.0001 & 0.001 & 0.01 & 0.1 & 10^6
+	\end{bmatrix} \]
+\end{itemize}
+
+{\it Dodatna naloga\/}: Lastne vrednosti in lastne vektorje gornjih matrik na različne načine: potenčna iterativna
+metoda, Jacobijeva metoda, iskanje ničel sekularne enačbe, ... Kako hitro različne metode konvergirajo k pravim vrednostim?
+
+\clearpage
+
+\end{document}
