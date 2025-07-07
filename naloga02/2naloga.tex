@@ -1,0 +1,160 @@
+\documentclass[12pt]{article}
+\newcommand{\bi}[1]{\hbox{\boldmath{$#1$}}}
+\newcommand{\bm}[1]{\hbox{\underline{$#1$}}}
+\textheight 23 cm
+\textwidth 16 cm
+\voffset=-20 mm
+\hoffset=-15 mm
+\usepackage{times}
+\include{template}
+
+\pagestyle{empty}
+
+\begin{document}
+\thispagestyle{empty}
+
+
+
+\setcounter{equation}{0}
+\centerline{\sc matematično-fizikalni seminar~\thisyear}
+\bigskip
+\centerline{\bf 2. naloga: Iskanje ničel funkcij in preprosta
+  numerična integracija v 1D }
+\bigskip
+\bigskip
+
+Najpreprostejši postopki v numeričnih metodah so iskanje ničel funkcij v eni dimenziji.  Ne obstaja metoda, ki bi sama poiskala
+\emph{vse} ničle funkcije, konvergenca k ničli funkcije je vedno
+odvisna od začetnih vrednosti algoritma.
+
+Najpreprostejši postopek bi seveda bil kar `prečesavanje'
+funkcije z delitvijo definicijskega območja le-te na dovolj gosto
+mrežo točk $x_i$ in iskanjem intervala:
+$$ f(x_{i+1})\cdot f(x_i) < 0 $$
+kjer je v danem  intervalu $[x_i, x_{i+1}]$ zagotovo liho število
+ničel. Ta interval lahko potem zopet razdelimo na drobnejše
+intervale in znova prečešemo itd.. dokler ne dosežemo željene
+natančnosti. Vendar je ta postopek zelo `drag' z računskega stališča, posebej če je definicijsko območje funkcije zelo
+veliko. Poleg tega v splošnem ne vemo, ali so izbrani koraki dovolj
+majhni, da objamejo ničle funkcij. Tako takšno metodo kvečjemu kombiniramo z
+naprednejšimi, v fiziki pa poleg tega pogosto
+lahko vsaj nekoliko uganemo ustrezna območja glede na fizikalni
+problem, ki ga rešujemo.
+
+Preprosta, a povsem uporabna metoda je t.i. metoda \emph{bisekcije},
+ki deluje na naslednji način:
+\begin{enumerate}
+\item Izberi interval $[a,b]$, kjer velja $$ f(a)\cdot f(b) < 0 , $$ ta
+  vsebuje vsaj eno ničlo.
+\item Izberi točko na sredi intervala $x=(a+b)/2$. če je $$
+  f(a)\cdot f(x) < 0 $$ postavi $b = x$, drugače postavi $a =
+  x$.
+\item Ponavljaj prejšnji korak, dokler $|b-a| < \epsilon$, kjer je
+  $\epsilon$ želena natančnost.
+\end{enumerate}
+
+V vsakem koraku se interval zmanjša za polovico, kar je v splošnem
+dovolj hitra konvergenca za običajne potrebe. število
+potrebnih korakov lahko tudi izračunamo $ n = \log_2 (
+|b-a|/\epsilon) $.
+
+
+Zgornjo metodo lahko prevedemo tudi na \emph{sekantno} metodo in
+metodo \emph{regula falsi}, če
+predpostavimo, da je funkcija znotraj intervala dovolj pohlevna
+(skoraj linearna) in določimo novo točko $x$ namesto z bisekcijo
+z linearno interpolacijo: skozi točki $a$ in $b$ potegnemo premico
+in pogledamo, kje seka koordinatno os.
+
+Hitrejša metoda je Newton-Rhapsonova metoda, za katero pa moramo
+poleg funkcije $f(x)$ poznati tudi analitični izraz za njen odvod
+$f'(x)$.
+Metoda temelji na Taylorjevem razvoju:
+$$f(x+\delta x) = f(x)+f'(x) \delta x + \ldots$$
+če predpostavimo, da nam $\delta x$ da želeni premik iz začetne
+ točke v ničlo funkcije, in je torej $f(x+\delta x) = 0$
+lahko izrazimo $\delta x$:
+$$ \delta x = - \frac{f(x)}{f'(x)},$$
+kar velja točno le za premice, je pa morda dober približek tudi
+za našo funkcijo. Postopek je torej:
+\begin{enumerate}
+\item Izberi začetno točko $x$.
+\item Izračunaj  premik $ \delta x = - \frac{f(x)}{f'(x)}.$
+\item Postavi novo točko $x \to x+\delta x$.
+\item Ponavljaj zgornja dva koraka dokler $|\delta x |< \epsilon$.
+\end{enumerate}
+
+čeprav je konvergenca te metode precej hitrejša od bisekcije, pa
+lahko tu zaidemo v težave, če naletimo na točko, kjer gre
+odvod funkcije proti ničli; tu nam metoda potem podivja, in gre
+interval proti neskončnosti.  Tako je ta metoda pogosto kombinirana
+npr. z bisekcijo ki ji poda dodatno robustnost.
+
+Z boljšimi interpolacijskimi približki za določitev nove točke so potem izvedene še
+\emph {Riddersova metoda}, \emph{Brentova metoda} ipd. , ki so še ustrezno
+hitrejše.
+
+\vskip 1 cm
+Drugo področje primerno za uvod v numerične metode v fiziki je
+numerična integracija funkcij v eni dimenziji. Tu je interpretacija
+preprosta: čim bolje bi radi določili ploščino pod dano
+funkcijo $f(x)$.  V ta namen razdelimo interval  integracije $[a,b]$ v
+mrežo N točk:
+$$x_i = x_1+ h;  ~~~~ i=1,\ldots,N ; ~~~~ x_1 =a , x_{N} = b, $$
+
+pri čemer je korak $h=(b-a)/N$ konstanten. Preproste metode nato
+interpolirajo funkcijo $f(x)$ v točkah $x_i$ in $f_i = f(x_i)$ s
+polinomi različnih redov (katerih analitične inegrale seveda
+poznamo).
+
+Najpreprostejša je \emph{trapezna metoda}, kjer je funkcija $f(x)$
+med sosednjima točkama aproksimirana kar s premico (ploskev je
+torej trapez). Dobimo:
+$$ \int_{x_1}^{x_2} f(x)\, dx = h \left [ \frac{1}{2} f_1 +  \frac{1}{2} f_2 \right ], $$
+oziroma za cel interval:
+$$ \int_{x_1}^{x_N} f(x)\, dx = h \left [ \frac{1}{2} f_1 + f_2 + f_3
+  + \ldots + f_{N-1} + \frac{1}{2} f_N \right ].$$
+
+Ta metoda je seveda točna le za premice, v splošnem je natan\v
+cnost $O(h^3 f'')$.
+
+Boljša formula, kjer je interpolacija točna do reda $x^3$, je
+\emph{Simpsonova formula}:
+$$ \int_{x_1}^{x_3} f(x)\, dx = h \left [ \frac{1}{3} f_1 +
+  \frac{4}{3} f_2 +  \frac{1}{3} f_3 \right ], $$
+
+ki seveda potrebuje tri točke in je torej obsega interval dol\v
+zine $2h$. Za celoten interval jo potemtakem zlepimo v:
+$$ \int_{x_1}^{x_N} f(x)\, dx = h \left [ \frac{1}{3} f_1 +
+  \frac{4}{3} f_2 +  \frac{2}{3} f_3 +
+  \frac{4}{3} f_4 +  \frac{2}{3} f_5 + \ldots + \frac{2}{3} f_{N-2} +
+  \frac{4}{3} f_{N-1} +  \frac{1}{3} f_N  \right ]. $$
+
+Obstajajo še nadaljnje formule za višje rede interpolacij, kot
+so \emph{Bode-jeva (Boolova) formula} etc. Za integracijo bolj zahtevnih funkcij
+pa so razvite naprednejše metode, kot so kvadraturne formule, kjer
+mreža točk ni več konstantna temveč se prilagaja ekstremom
+in hitremu spreminjanju funkcij.  Zgornje preproste formule so v
+numeričnih izračunih dodatno obdelane za pospešek konvergence
+in nato dobimo npr. \emph{Rombergov integracijski algoritem} in
+podobno.
+
+\vskip 1cm
+
+\emph{Nalogi}:
+\begin{itemize}
+\item Z metodami bisekcije in regule falsi poišči ničle nekaj polinomov
+  tretjega reda in primerjaj z analitičnimi vrednostmi (uporabi npr. Cardanovo formulo).
+  Uporabi tudi kakšen naprednejši algoritem, na primer algoritme v NumPy (\texttt{numpy.roots}) ali
+  SciPy \\(\texttt{scipy.optimize.brentq}, Wijngaarden-Dekker-Brent metoda, ena najboljših) in primerjaj hitrost konvergence.
+\item S trapezno in Simpsonovo metodo, pa tudi s kakšno 'vgrajeno' v SciPy (ali podobno), določi ploščino
+  funkcije $1-x^2$ v intervalu [-1,1] in funkcije $x^3 e^{-x}$ v
+  intervalu od nič do neskončno (kaj pomeni tu neskončno - kaj lahko vzameš?).
+  Kako dobro slednja konvergira kvrednosti gama funkcije, ki je tu 3!=6 ?
+\end{itemize}
+
+
+\clearpage
+
+
+\end{document}
