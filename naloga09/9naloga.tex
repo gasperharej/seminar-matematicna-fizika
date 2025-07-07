@@ -1,0 +1,166 @@
+
+\documentclass[slovene,11pt,a4paper]{article}
+\usepackage[margin=2cm,bottom=3cm,foot=1.5cm]{geometry}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5ex}
+
+\usepackage[pdftex]{graphicx}
+\DeclareGraphicsExtensions{.pdf,.png}
+
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage[usenames]{color}
+\usepackage[slovene]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{siunitx}
+\include{template}
+
+\def\phi{\varphi}
+\def\eps{\varepsilon}
+\def\theta{\vartheta}
+
+
+\title{
+\sc\large Matematično-fizikalni seminar \thisyear\\
+\bigskip
+\bf 9. naloga: Začetni problem PDE --- diferenčna metoda}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-1cm}
+
+Diferenčne metode za aproksimativno reševanje parcialnih
+diferencialnih enačb so široko uporabne, saj niso omejene na
+preproste geometrije in linearne robne pogoje. Pri aproksimaciji
+odvodov s končnimi diferencami se običajno zadovoljimo z najnižjim
+možnim redom, formule višjega reda so zelo rade nestabilne.
+Tu bomo delovanje diferenčnih metod preskusili na difuzijski in
+valovni enačbi.
+
+Temperaturno polje v homogeni neskončni plasti s končno
+debelino $a$ (enodimenzio\-nalni problem) je podano z enačbo
+\[
+\frac{\partial T}{\partial t} = D\,\frac{\partial^2 T}{\partial x^2}
++ \frac{q}{\rho c}\;,\qquad 0<x<a,\qquad D=\frac{\lambda}{\rho c}.
+\]
+z začetno temperaturno sliko $T(x,t=0)=f(x)$, podani pa morajo biti tudi robni pogoji 
+na robovih, $T(x=0,t)=g_0(t)$ ter  $T(x=a,t)=g_1(t)$. Difuzijsko enačbo
+najpreprosteje aproksimiramo z (za zapis uporabimo generično funkcijo u(x,t)):
+\begin{equation}
+\frac{u_{m}^{n+1}-u_{m}^{n}}{\kappa}=D\, \frac{u_{m+1}^{n}-2 u_{m}^{n}+u_{m-1}^{n}}{h^{2}}\, +\, Q \, +O_g\left(\kappa+h^{2}\right)
+\end{equation}
+kjer štejemo z indeksom $n$, kjer definiramo tudi maksimalni $N$ ter je $0 \leq n \leq N$ za časovne sloje v razmikih $\Delta t = \kappa$,
+z indeksom $m$ pa označimo krajevne točke, $0 \leq m \leq M$ v enem
+sloju z razmaki $\Delta x = h$. Ob času $t=0$ je z začetnim pogojem podan prvi sloj, $n=0$,
+iz njega izračunamo drugi sloj, in tako naprej. Enačba~(1) velja
+za vse notranje točke, obe robni točki pa določata robna pogoja.
+Ta eksplicitna shema je preprosto izvedljiva 
+\[
+u_{m}^{n+1}=u_{m}^{n}+r\, \left(u_{m+1}^{n}-2 u_{m}^{n}+u_{m-1}^{n}\right)\, +\, \kappa Q 
+\]
+in stabilna  za $r=D\kappa/h^2 \leq 1/2$, ni pa posebno točna, saj je v časovnem odvodu le
+prvega reda. Nekoliko točnejša postane za $r=1/6$, vendar napredujemo
+pri tem koraku zelo počasi, saj predifundira rešitev šele v
+$6N^2$ korakih od enega konca krajevnega intervala do drugega.
+
+Boljša je {\sl Crank-Nicholsonova shema}, ki je drugega reda v
+času: časovno diferenco na levi strani enačbe~(1) izrazimo z
+aritmetično sredino krajevnih diferenc v sloju $n$ in sloju $n+1$.
+\[
+\frac{u_{m}^{n+1}-u_{m}^{n}}{\kappa}=D\, \frac{1}{2} \left[ \frac{u_{m+1}^{n+1}-2 u_{m}^{n+1}+u_{m-1}^{n+1}}{h^{2}} + \frac{u_{m+1}^{n}-2 u_{m}^{n}+u_{m-1}^{n}}{h^{2}} \right]\, +\, Q \, +O_g\left(\kappa^{2}+h^{2}\right)
+\]
+Novih vrednosti v sloju $n+1$ ne dobimo eksplicitno, pač pa kot
+rešitve tridiagonalnega sistema enačb. Ker je časovna zahtevnost
+takega sistema le $\sim M$, se z računom ne zamudimo dosti dlje,
+stabilnost pa je zagotovljena za poljubno velik korak. Ker rešujemo
+enačbo s konstantnimi koeficienti, je tudi matrika sistema vedno
+ista. Preredimo enačbo, da imamo na levi  funkcijo v prihodnosti in na desni v sedanjosti:
+\[
+u_{m}^{n+1} +\, r \frac{1}{2} \left[ u_{m+1}^{n+1}-2 u_{m}^{n+1}+u_{m-1}^{n+1} \right]= u_{m}^{n} + r\, \frac{1}{2} \left[ u_{m+1}^{n}-2 u_{m}^{n}+u_{m-1}^{n} \right] + \kappa Q . 
+\]
+To lahko še bolj kompaktno zapišemo v matrični obliki:
+Vrednosti  funkcije $u$ v točkah $x_m$ uredimo v (M-1)-dimenzionalen vektor:
+\begin{equation*}
+\vec{\boldsymbol{u}}^n=(u_1^n,u_2^n,\ldots,u_{M-1}^n)^T
+\end{equation*}
+in sistem prepišemo v matrično obliko
+\begin{equation*}
+  \left(\mathsf{I}-\frac{r}{2}\,\mathsf{\underline A}\right)\vec{\boldsymbol{u}}^{n+1}=
+  \left(\mathsf{I}+\frac{r}{2}\,\mathsf{\underline A}\right)\vec{\boldsymbol{u}}^{n} + \vec{\boldsymbol{b}} \qquad
+  \mathsf{\underline A}=\begin{pmatrix}
+  -2 & 1 \\
+  1   & -2 & 1 \\
+  & 1   & -2 & 1 \\
+  & & \ddots & \ddots & \ddots \\
+  & & & 1 & -2 & 1 \\
+  & & & & 1 & -2
+  \end{pmatrix}\>,
+\end{equation*}
+kjer je vektor $\vec{\boldsymbol{b}}$ napolnjen z robnima pogojema (in po potrebi izviri Q)
+\begin{equation*}
+  \vec{\boldsymbol{b}}= \left(\frac{r}{2}(u_0^n+u_0^{n+1})+\kappa Q,\kappa Q,\ldots,\frac{r}{2}(u_M^n+u_M^{n+1})+\kappa Q\right)^T
+\end{equation*}
+Dobili smo torej matrični sistem, ki ga moramo rešiti v vsakem časovnem koraku, da iz stanja $\boldsymbol{u}^i$ dobimo stanje $\boldsymbol{u}^{i+1}$, kar najlažje rešimo kar z Thomasovim algoritmom, ker je matrika tridiagonalna.
+
+\bigskip\noindent
+Nihanje strune opisuje enačba
+\[
+\frac{1}{c^2} \, \frac{\partial^2 u}{\partial t^2}= \frac{\partial^{2} u}{\partial x^{2}}, \quad 0 \leq x \leq a
+\]
+kjer sta predpisana začetni odmik $u(x,t=0)=f(x)$ in začetna
+hitrost $\partial u/\partial t|_{t=0} =g_{0,1}(x)$, na robovih pa je struna vpeta in je torej odmik identično enak nič. 
+Za valovno enačbo obstaja
+stabilna eksplicitna metoda drugega reda v času. Dobimo jo, če v
+enačbi~(1) zapišemo oba odvoda kot
+\begin{eqnarray*}
+\frac{\partial^2 u}{\partial t^2} & \rightarrow \frac{u_{m}^{n+1}-2 u_{m}^{n}+u_{m}^{n-1}}{\kappa^{2}}+O_g\left(\kappa^{2}\right),\\[3pt]
+\frac{\partial^2 u}{\partial x^2} & \rightarrow \frac{u_{m+1}^{n}-2 u_{m}^{n}+u_{m-1}^{n}}{h^{2}}+O_g\left(h^{2}\right).
+\end{eqnarray*}
+Vrednosti na časovnem sloju $n+1$ izrazimo s slojema $n$ in $n-1$ in analogno za krajevni odvod:
+\[u_{m}^{n+1} =  2 u_{m}^{n} - u_{m}^{n-1} +  \left(\frac{c \kappa}{h}\right)^2 \left[u_{m+1}^{n}-2 u_{m}^{n}+u_{m-1}^{n}\right] +
+ O_g\left(h^{2}+\kappa^2 \right).
+\]
+Začetna sloja dobimo iz dveh začetnih pogojev: za funkcijo in za
+njen časovni odvod. V posebnem primeru, ko so začetne hitrosti
+povsod enake 0, morata biti sloja $n=1$ in $n=-1$ enaka in velja
+\[
+u_{m}^{1} =
+u_{m}^{0} + {\frac{1}{2}}\cdot \left(\frac{c\kappa}{h}\right)^2 \cdot (u_{m+1}^{0} -2 u_{m}^{0}+u_{m-1}^{0}).
+\]
+Metoda je stabilna za $\kappa c/h \leq 1$ (\emph{Courantov pogoj}), kar pomeni, da zadošča
+$\sim N$ korakov za pot vala od enega konca intervala do drugega.
+Večji korak omogočajo implicitne metode, vendar z njimi ne
+moremo pridobiti dosti.
+
+\medskip
+
+{\it Naloga\/}: Zasledovali bomo časovni razvoj dveh problemov
+z robnimi pogoji I. vrste.
+\begin{enumerate}
+\item Poišči temperaturni profil plasti, ki ima v začetku
+povsod temperaturo okolice, le med $0.2a$ in $0.4a$ je segreta na $T_0$.
+Nariši temperaturo plasti za različne čase in primerjaj rezultate v
+odvisnosti od velikosti koraka $\kappa$ in $h$. Uporabi metodo
+FTCS ali Crank-Nicholsonovo metodo. Dodatno uporabi obe metodi in
+ju primerjaj.
+
+%\item obliko strune, ki ima v začetku obliko Gaussove funkcije s
+%središčem pri $0.4a$ in $\sigma=0.1a$, za čase
+%$\omega_1 t/\pi =$ 0 (0.2) 2!
+%Začetna hitrost naj bo povsod nič.
+
+\item Poišči obliko strune, ki ima v začetku trikotno obliko
+z vrhom pri $x=0.4a$, za čase $\omega_1 t/\pi =$ 0 do 2 za 
+različne velikosti koraka $\kappa$ in $h$.
+Začetna hitrost naj bo povsod 0.
+\end{enumerate}
+
+
+
+
+\end{document}
