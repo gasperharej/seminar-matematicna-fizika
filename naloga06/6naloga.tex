@@ -1,0 +1,137 @@
+\documentclass[12pt]{article}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5ex}
+
+\usepackage[pdftex]{graphicx}
+\DeclareGraphicsExtensions{.pdf,.png}
+
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage[usenames]{color}
+\usepackage[slovene]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{siunitx}
+
+\include{template}
+
+
+\newcommand{\bi}[1]{\hbox{\boldmath{$#1$}}}
+\newcommand{\bm}[1]{\hbox{\underline{$#1$}}}
+\textheight 23 cm
+\textwidth 16 cm
+\voffset=-20 mm
+\hoffset=-15 mm
+\usepackage{times}
+
+\pagestyle{empty}
+
+
+\begin{document}
+\thispagestyle{empty}
+
+
+\setcounter{equation}{0}
+\centerline{\sc matematično-fizikalni seminar \thisyear}
+\bigskip
+\setcounter{equation}{0}
+\centerline{\bf 6. naloga: Enačbe hoda}
+\bigskip
+\bigskip
+
+Med najpreprostejše fizikalne modele sodijo enačbe, ki
+povezujejo vrednosti spremenljivk sistema z njihovimi časovnimi
+spremembami. Tak primer je enačba za časovno odvisnost
+temperature majhnega, dobro prevodnega telesa, ko lahko zanemarimo
+krajevno odvisnost: enačbo hoda dobimo iz energijskega zakona.
+Vzemimo primer žarilne nitke, ki jo grejemo s tokom, pri čemer bomo
+uporabili tokovni sunek iz kondenzatorja:
+\[
+mc \cdot \Dd{T}{t} =
+R I_0^2 \cdot {\rm exp}\left(-\frac{2t}{RC}\right) -
+\sigma S T^4.
+\]
+Z vpeljavo brezdimenzijskih spremenljivk dobimo enoparametrično
+enačbo
+\begin{equation}
+\Dd{u}{x} = a\cdot {\rm exp}(-2x) - u^4.
+\end{equation}
+Zanemarili smo sevalni tok, ki ga nitka prejema iz okolice, zato
+se bo temperatura po dovolj dolgem času poljubno približala
+absolutni ničli: to pomeni, da rešitve ne kaže vleči predolgo.
+Da se izognemo tudi preračunavanju začetne temperature, nas bodo
+zanimali samo zelo močni tokovni sunki, ko lahko začetno
+notranjo energijo nitke zanemarimo. K enačbi (1) sodi torej
+začetni pogoj $u(x=0) = 0$.
+
+Preiskali bomo uporabnost različnih metod za reševanje enačbe
+(1). Sledeč fizikalnemu občutku lahko v najbolj grobi inačici
+zapišemo (Eulerjeva metoda). To je v bistvu le prepisana aproksimacija za prvi odvod
+$y' \approx (y(x+h) - y(x)) / h$, torej
+\begin{equation}
+y(x+h) = y(x) + h\,\left.\Dd{y}{x}\right|_x \>.
+\label{euler}
+\end{equation}
+Diferencialno enačbo smo prepisali v diferenčno: sistem
+spremljamo v ekvidistantnih korakih dolžine $h$. Metoda je
+večinoma stabilna, le groba: za večjo natančnost moramo
+ustrezno zmanjšati korak.
+Za izboljšanje metode zapišimo odvod kot:
+$$ \left.\Dd{y}{x}\right|_x = f(x,y) $$ ter $$ x_{n+1} = x_n + h,
+~~~ y_n = y(x_n)$$
+Heunova metoda (${\cal O}\,(h^3 )$ lokalno) je boljši približek z:
+\begin{eqnarray}
+\hat{y}_{n+1} & =  & y_n +  h \cdot f(x_n,y_n) \\
+y_{n+1} & = & y_n + \frac{h}{2} \left[ f(x_n,y_n) + f(x_{n+1},\hat{y}_{n+1})\right]
+\end{eqnarray}
+Izvedenka tega je nato Midpoint metoda (tudi ${\cal O}\,(h^3 )$ lokalno):
+\begin{eqnarray}
+K_1 & = & h \cdot f(x_n,y_n) \\
+K_2 & = & h \cdot f(x_n+{1 \over 2}h,y_n+{1 \over 2}K_1) \\
+y_{n+1} & = & y_n + K_2
+\end{eqnarray}
+Le-to lahko potem izboljšamo kot modificirano Midpoint metodo
+itd\ldots
+
+V praksi zahtevamo natančnost in numerično učinkovitost,
+ki sta neprimerno boljši kot pri opisanih preprostih metodah.
+Uporabimo metode, zasnovane na algoritmih prediktor-korektor,
+metode višjih redov iz družine Runge-Kutta (z adaptivnimi koraki), ali ekstrapolacijske metode.
+Lotimo se jih, če je zahtevana spodobna natančnost (pod 1~\%):
+tedaj tudi ne skoparimo, izberemo večinoma četrti red (globalna natančnost je reda ${\cal O}\,(h^4))$.
+
+\medskip
+Brez dvoma ena najbolj priljubljenih je metoda RK4,
+\begin{align}
+k_1 & =
+  f\left(x,\,{y}(x)\right) \> {,}\nonumber\\
+k_2 & =
+  f\left(x+{\textstyle{1\over 2}}h,\,
+       {y}(x)+{\textstyle{h\over 2}}k_1\right) \> {,}\nonumber\\
+k_3 & =
+  f\left(x+{\textstyle{1\over 2}}h,\,
+       {y}(x)+{\textstyle{h\over 2}}k_2\right) \> {,}\label{eq:rk4}\\
+k_4 & =  f\left(x+h,\,{y}(x)+hk_3\right) \> {,}\nonumber\\
+{y}(x+h) & =  {y}(x)
+  + {\tfrac{h}{6}}\,\left(k_1 + 2k_2 + 2k_3 + k_4\right) + {\cal O}(h^5)
+  \nonumber\> {.}
+\end{align}
+
+\bigskip
+
+
+\noindent
+{\it Naloga\/}:
+\begin{itemize}
+\item za $a = 10$ v enačbi (1) preskusi čim več metod: Eulerjevo, Midpoint, Runge-Kutto 4. reda, Runge-Kutta-Fehlberg  Adams-Bashfort-Moultonov prediktor-korektor ter še katero od boljših metod, ki jih najdete vgrajene v različna programska orodja. Raziščie kakšno natančnost in stabilnost lahko dosežemo s posamično metodo v odvisnosti od širine koraka? Rezultate prikažite s tabelami in/ali grafičnimi prikazi. Izberi metodo (in korak) za izračun družine rešitev pri a=2 do a=18 v korakih (vsaj) po 4! {\it V premislek\/}: kakšno metodo bi uporabil, če bi posebej natančno želel določiti maksimalne temperature in trenutke, ko nastopijo?
+\item Z reševanjem navadne diferencialne enačbe $dy/dt=y^2+2t^2$ primerjaj različne metode (e.g. Eulerjeva, Midpoint, klasična Runge-Kutta 4. reda, Runge-Kutta-Fehlberg, Adams-Bashford-Moultonovo, prediktor-korektor).  Privzemi, da je ob t=0, y(0)=1. Primerjajte rešitve za različne širine korakov (e.g. 0.001, 0.01, 0.1). Pozor: rešitev divergira blizu $t = 0.9$.
+% tule divergira pri t = 0.9sth !
+\end{itemize}
+
+
+\clearpage
+
+
+\end{document}
