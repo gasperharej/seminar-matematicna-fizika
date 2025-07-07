@@ -1,0 +1,127 @@
+\documentclass[12pt]{article}
+\newcommand{\bi}[1]{\hbox{\boldmath{$#1$}}}
+\newcommand{\bm}[1]{\hbox{\underline{$#1$}}}
+\textheight 23 cm
+\textwidth 16 cm
+\voffset=-20 mm
+\hoffset=-15 mm
+\usepackage{times}
+
+\include{template}
+\pagestyle{empty}
+
+\begin{document}
+\thispagestyle{empty}
+
+
+\setcounter{equation}{0}
+\centerline{\sc matematično-fizikalni seminar~\thisyear}
+\bigskip
+\setcounter{equation}{0}
+\centerline{\bf 3. naloga: Monte Carlo integracija}
+\bigskip
+\bigskip
+
+Pri integraciji zahtevnejših funkcij, predvsem pa pri integraciji v več dimenzijah, 
+postanejo običajne integracijske metode zapletene ter pogosto računsko zelo počasne. 
+Tu priskoči na pomoč statistika. Izhajamo lahko iz izreka
+o pričakovani (ali povprečni) vrednosti (zapisan v eni dimenziji, velja v poljubno dimenzijah):
+\begin{equation}
+\int\limits_{a}^{b} g(x)\, w(x)\, dx = \lim\limits_{N \rightarrow \infty} \frac{1}{N}
+\sum\limits_{i=1}^{N} g(x_i) = \bar{g}
+\end{equation}
+kjer je w(x) verjetnostna porazdelitev norminirana na intervalu
+$(a,b)$ in so $x_i$ naključno izbrane vrednosti iz te porazdelitve v intervalu $(a,b)$.
+Izrek velja točno v limiti ko gre število meritev  $N \to \infty$.
+Varianca (kvadrat `napake') tako določenega povprečja je podan s
+formulo:
+\begin{equation}
+\sigma^2_{\bar{g}} = \frac{ \frac{1}{N}\sum\limits_{i=1}^{N} g^2(x_i) -
+  (\frac{1}{N} \sum\limits_{i=1}^{N} g(x_i))^2}{N-1} = \frac{\overline{g^2} - \bar{g}^2}{N-1}
+  \label{eq:var}
+\end{equation}
+in pada približno s številom meritev N.
+
+Najlažji primer je izračun ploščin in volumnov s pomočjo
+MC integracije. Vzemimo ploskovni primer: Na kvadratni podlagi s
+stranico a je lik s površino S. Verjetnostna porazdelitev točk
+naj bo enakomerna po površini kvadrata. Verjetnost, da točka
+pade v lik je kar enaka razmerju ploščin $p=S/a^2$. Funkcija $g$
+opisuje ploskev s pogojem $g =1$, če je točka v liku in $g=0$
+drugače. Integral v izreku nam res da:
+\begin{equation}
+\int\limits_{a^2} g(S)\, w(S)\, dS = \frac{1}{a^2} \int\limits_{S} 1
+\, dS  = \frac{S}{a^2} = p
+\end{equation}
+in varianca postane
+\begin{equation}
+\sigma^2_{\bar{f}} = \sigma^2_{p} = \frac{p(1-p)}{N-1},
+\end{equation}
+kar ustreza binomski napaki pri velikih N kot pričakovano. Ploščino lahko torej določimo
+s poskušanjem in določitvijo verjetnosti $\hat{p}=N_{\mathrm{uspehov}}/N_{\mathrm{poskusov}}$. 
+Ploščino potem določimo kot $S=a^2\cdot \hat{p}$ in napako kot  
+$\sigma_S = a^2\cdot \sigma_{\hat{p}}$. Ta recept lahko uporabimo brez sprememb za izračun 
+prostornine v treh dimenzijah (in v principu tudi prostornino v poljubno dimenzijah...)!
+
+Pomembno je opažanje, da v primeru, ko
+območje integracije (verjetnostno  porazdelitev) stisnemo na površino lika S, postane 
+varianca enaka nič (p=1)! 
+
+To ugotovitev lahko
+tudi posplošimo v primeru integracije poljubnih funkcij. Če bi
+radi izračunali integral funkcije f(x) v intervalu $(a,b)$,
+uporabimo izrek o pričakovani  vrednosti takole:
+\begin{equation}
+\int\limits_{a}^{b} f(x)\,  dx = \int\limits_{a}^{b} g(x)\, w(x)\, dx = \frac{1}{N}
+\sum\limits_{i=1}^{N} g(x_i) = \bar{g},
+\end{equation}
+pri čemer je $g(x)=f(x)/w(x)$. V najpreprostejšem primeru je $x$ enakomerno porazdeljen
+v intervalu $[a,b]$, kar da verjetnostno porazdelitev $w(x)=1/(b-a)$ in $g(x)=f(x)\cdot(b-a)$. V tem
+primeru lahko torej tudi napišemo:
+\begin{equation}
+\int\limits_{a}^{b} f(x)\,  dx = \int\limits_{a}^{b} g(x)\, \frac{1}{b-a}\, dx = \frac{1}{N}
+\sum\limits_{i=1}^{N} g(x_i) = \frac{(b-a)}{N} \sum\limits_{i=1}^{N} f(x_i),
+\end{equation}
+kar nam da najpreprostejšo formulo za MC integracijo. Ustrezno lahko zdaj preprosto uporabimo tudi fomulo za varianco (enačba \ref{eq:var}). 
+
+V idealnem primeru bi si torej lahko izbrali w(x)=f(x), kar bi dalo g(x)=1 po celem intervalu in potemtakem
+varianco rezultata enako nič. V realnih primerih pa si lahko
+izberemo vsaj funkcijo, ki približno opisuje f(x). Pristop se
+imenuje `importance sampling' (prednostno vzorčenje).
+
+Točke $x_i$ je v tem primeru potrebno simulirati (generirati) po verjetnostni
+porazdelitvi w(x). Za izračun algoritma je osnova naslednja
+formula:
+\begin{equation}
+\int\limits_{a}^{x} w(t)\,  dt = \rho \cdot \int\limits_{a}^{b}  w(t)\, dt,
+\end{equation}
+ki jo je potrebno rešiti in iz nje izraziti spremenljivko x. Za
+nekatere porazdelitve je izračun preprost, npr $w(x)=\frac{1}{\tau}
+e^{-\frac{x}{\tau}}$ nam da kar:
+\begin{equation}
+x=-\tau \ln(1-\rho).
+\end{equation}
+
+Podobno dobimo za vzorčenje Gaussove porazdelitve recept:
+\begin{itemize}
+\item pridobi dve psevdo-naključni števili $\rho_1, \rho_2$,
+ \item spremenljivka x je porazdeljena po Gaussovi porazdelitvi ko:
+$$ x = sin ( 2\pi\, \rho_1 ) \sqrt{ -2\ln  \rho_2} $$
+\end{itemize}
+
+Naloge:\\
+\begin{itemize}
+\item S pomočjo MC integracije izračunaj ploščino elipse in
+  volumen elipsoida ter opazuj padanje napake s številom izbranih točk. 
+  Primerjaj s pravo vrednostjo ($\pi a b$ in $\frac{4}{3} \pi a b c$) ter (dodatno) za elipso primerjaj natančnost in hitrost metode 
+  z računanjem ploščine s pomočjo točk na enakomerni mreži!
+\item Izračunaj integral normalne Gaussove porazdelitve ($\mu = 0$ in $\sigma = 1$) na določenem območju (npr. [-1, 1], [-2, 2], [-3, 3]) s pomočjo
+  trapezne formule in navadne MC integracije ter (dodatno) prednostnega 
+  vzorčenja, pri čemer parameter srednje vrednosti ($\mu$) za prednostno vzorčenje
+  spreminjaj od prave vrednosti postopoma daleč stran. Primerjaj čase integracij in računske napake!
+\end{itemize}
+
+\clearpage
+
+
+\end{document}
