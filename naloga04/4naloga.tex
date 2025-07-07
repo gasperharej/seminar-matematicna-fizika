@@ -1,0 +1,134 @@
+\documentclass[12pt]{article}
+\newcommand{\bi}[1]{\hbox{\boldmath{$#1$}}}
+\newcommand{\bm}[1]{\hbox{\underline{$#1$}}}
+\textheight 23 cm
+\textwidth 16 cm
+\voffset=-20 mm
+\hoffset=-15 mm
+\usepackage{times,amsmath}
+\include{template}
+\pagestyle{empty}
+
+\begin{document}
+\thispagestyle{empty}
+
+
+\setcounter{equation}{0}
+\centerline{\sc matematično-fizikalni seminar~\thisyear}
+\bigskip
+\setcounter{equation}{0}
+
+\centerline{\bf 4. naloga: Iskanje funkcijskih ekstremov in prilagajanje funkcij meritvam}
+\bigskip
+\bigskip
+
+Tako kot pri vseh numeričnih metodah kompleksnost metode iskanja
+ekstremov narašča z dimenzijo prostora v katerem je funkcija
+definirana. Najbolj robustne in zanesljive metode so tako razvite za
+iskanje ekstremov v eni dimenziji. V splošnem pa ne smemo pozabiti
+na dejstvo, da \emph{ne obstaja} metoda, ki bi avtomatsko našla
+\emph{globalni} ekstrem (minimum ali maksimum), vsaka metoda se bo
+slej ko prej ustavila v nekem lokalnem ekstremu. Ali je le-ta globalen
+in/ali edini pa je potrebno proučiti naknadno (s poskušanjem
+ipd.).
+
+Iskanje minimumov ali maksimumov funkcije lahko poenotimo z metodami
+iskanja minimumov, saj za maksimume lahko vedno definiramo $f \to -f$.
+
+V eni dimenziji je najpreprostejša (in najrobustnejša) metoda
+\emph{zlatega reza}. Najprej poiščemo tri točke (A$<$b$<$C), za
+katere velja f(b) $<$ f(A) in f(b) $<$ f(C); točka b je torej groba ocena
+minimuma. Novo točko B nato najdemo s uporabo razmerja zlatega reza, tukaj podano kot:
+$$ \frac{1}{\varphi} = \frac{\sqrt{5}-1}{2} = 0.61803. $$
+Koordinata nove točke B je podana z:
+$$ B = A + h \cdot \frac{1}{\varphi}, ~~ h=|C-A|.$$
+Dodatno poskusno točko D pa nato dodamo s faktorjem:
+$$ \frac{1}{\varphi^2} = \frac{3 - \sqrt{5}}{2} = 0.38197, $$
+in sicer s koordinato:
+$$ D = A + h \cdot \frac{1}{\varphi^2}, ~~ h=|C-A|.$$
+Očitno je točka D bližje točki A kot točka B. Nato obravnavamo dva scenarija:
+\begin{itemize}
+\item Če je vrednost $f(D) > f (B)$, potem postane novi triplet (D,B,C), točko A torej nadomesti točka D.
+\item V nasprotnem primeru, ko je  $f(D) < f (B)$, pa postane novi triplet (A,D,B), točko C torej nadomesti točka B, njeno vlogo
+pa prevzame točka D.
+\end{itemize}
+Pri vsakem koraku se interval zmanjša za faktor $\frac{1}{\varphi}$. 
+
+Metodo nato ponavljamo do želene natančnosti, pri čemer
+moramo paziti, da je dosegljiva natančnost le \emph{koren iz
+  numerične natančnosti računskih operacij}! (npr 10$^{-8}$ za
+dvojno natančnost (double precision)).
+
+Hitrejša, a nekoliko labilnejša metoda, je iskanje minimumov z
+prilagajanjem parabole na tri začetne točke in oceno novega
+minimuma iz minimuma prilagojene parabole:
+$$ x = b - \frac{1}{2} \frac{(b-a)^2 [ f(b)-f(c)]-(b-c)^2 [
+    f(b)-f(a)]}{(b-a)[ f(b)-f(c)]-(b-c) [ f(b)-f(a)]},
+$$
+ki pa odpove(duje) ko so izbrane tri točke (skoraj)
+kolinearne. Smiselna je torej ustrezna kombinacija obeh metod, poznana
+kot \emph{Brentova metoda}.
+
+V primeru, ko je poznana analitična oblika odvoda iskane funkcije,
+si seveda lahko pomagamo z numeričnim iskanjem ničle v odvodu
+(npr z metodo bisekcije).
+
+V več dimenzijah je problem ustrezno težji, najrobustnejša in
+precej učinkovita je t.i. \emph{Downhill simplex} metoda, ki jo
+bralec z lahkoto najde v literaturi in na spletu.
+
+Poseben primer uporabe minimizacije funkcij je prilagajanje (angl. \emph{fitting}) modelov (in s tem napovedanih funkcij) s prostimi parametri naboru izmerjenih količin.
+Najpogostejša načina prilagajanja funkcij s prostimi parametri podatkom sta
+metodi $\chi^2$ in metoda največje zanesljivosti (angl. \emph{Maximum Likelihood Metod}).
+Označimo nabor merjenih podatkov z $\{ x_i,y_i \}$ in njihove nedoločenosti z $\{\sigma_i\}$,
+modelske funkcije s $y=f(x,\alpha)$, kjer so z $\alpha$ označeni neznani parametri, ter uvedimo
+cenilko (angl. \emph{estimator}) za $\chi^2$:
+$$ \chi^2(\alpha) = \sum_i \frac{(y_i-f(x_i,\alpha))^2}{\sigma_i^2},$$
+kjer je nato ocena iskanih parametrov $\alpha$ dobljena z minimizacijo funkcije $\chi^2(\alpha)$. \\
+Metoda največje zanesljivosti se uporablja predvsem v primerih, ko vrednost $y=f(x,\alpha)$ predstavlja verjetnost (ali verjetnostno gostoto) in tako iščemo nabor parametrov $\alpha$, pri katerih je nabor verjetnosti za dane izmerke največji. Iščemo torej maksimum produkta verjetnosti
+$$L(\alpha) = \prod_i f(x_i,\sigma_i,\alpha),$$
+oziroma še bolj pogosto minimum naravnega logaritma zgornjega izraza (ki je pohlevnejša funkcija):
+$$-\ln L(\alpha) = -\sum_i \ln f(x_i,\sigma_i,\alpha).$$
+V primeru, da je verjetnostna porazdelitev Gaussova in da iščemo neznani parameter le-te ($\mu$, srednja vrednost), sta obe metodi enaki (dokaz je prepuščen bralcu).
+
+
+\emph{Naloga}:
+\begin{itemize}
+\item Z metodo zlatega reza in parabolično ter saj eno vgrajeno metodo (npr  Brentovo metodo v SciPy: scipy.optimize.brent)
+  poišči ekstreme nekaj funkcij različnih redov tipa $x^n*sin(x)$ (recimo do
+  tretjega reda) in primerjaj hitrost konvergence (št. korakov) in natančnost s točnimi vrednostmi.
+\item Z zgornjimi metodami poišči najboljše prilagajanje med podatki:
+
+\begin{equation*}
+\begin{split}
+\{x_i\} = [1.00000000, 1.50000000, 2.00000000, 2.50000000, 3.00000000, 3.50000000, 4.00000000, \\
+           4.50000000, 5.00000000, 5.50000000, 6.00000000, 6.50000000, 7.00000000, 7.50000000, \\
+           8.00000000, 8.50000000, 9.00000000, 9.50000000, 10.0000000, 10.5000000, 11.0000000]
+\end{split}
+\end{equation*}
+\begin{equation*}
+\begin{split}
+\{y_i\} = [0.31700705, 0.43791106, 0.56528271, 0.56102378, 0.63664784, 0.65121353, 0.63487502, \\
+           0.64501481, 0.60942923, 0.62411336, 0.61455575, 0.57226264, 0.54291294, 0.50329224, \\
+           0.50314769, 0.46050043, 0.42461463, 0.40771586, 0.41605889, 0.36732963, 0.33085992]
+\end{split}
+\end{equation*}
+\begin{equation*}
+\begin{split}
+\{\sigma_i\} = [0.01548814, 0.01715189, 0.01602763, 0.01544883, 0.01423655, 0.01645894, 0.01437587, \\
+                0.01891773, 0.01963663, 0.01383442, 0.01791725, 0.01528895, 0.01568045, 0.01925597, \\
+                0.01071036, 0.01087129, 0.01020218, 0.01832620, 0.01778157, 0.01870012, 0.01978618]
+\end{split}
+\end{equation*}
+
+%% vrednosti a=0.42, b=-0.24
+
+ in funkcijo dveh neznanih parametrov $a$ in $b$, oblike $f(x,a,b)=a*x*exp(b*x)$. Uporabi eno od vgrajenih metod (npr. v Pythonovih SciPy knjižnicah.)
+\item {\bf Dodatno:} Z Downhill simplex metodo poišči maksimum dvo-dimenzionalne Gaussove porazdelitve ter dvojne 2D Gaussove
+  porazdelitve (kamelja grba).
+\end{itemize}
+
+\clearpage
+
+
+\end{document}
