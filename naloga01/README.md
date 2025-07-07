@@ -1,9 +1,9 @@
 # Naloga 1 – Aproksimacija funkcije napake
 
 📁 **Vsebina**:
-- `gasper_harej_01.ipynb` – Jupyter zvezek
+- `gasper_harej_01.ipynb` – Jupyter zvezek z izvorno kodo
 - `gasper_harej_01.pdf` – PDF poročilo
-- `1naloga.tex` – LaTeX izvorna datoteka
+- `1naloga.tex` – LaTeX navodila naloge
 
 ## Povzetek
 
